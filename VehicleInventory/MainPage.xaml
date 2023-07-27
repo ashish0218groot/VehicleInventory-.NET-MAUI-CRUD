@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VehicleInventory.MainPage"
+             
+             xmlns:model="clr-namespace:VehicleInventory.Models"
+             xmlns:viewmodel="clr-namespace:VehicleInventory.ViewModels"
+             x:DataType="viewmodel:CarListViewModel"
+             Title="{Binding Title}"
+             >
+
+
+    <Grid ColumnDefinitions="*,*" ColumnSpacing="5" RowDefinitions="*,Auto">
+        <CollectionView Grid.ColumnSpan="2" ItemsSource="{Binding Cars}" SelectionMode="None" EmptyView="No cars available">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="model:Car">
+                    <Frame HeightRequest="90">
+                        <HorizontalStackLayout Padding="10" Spacing="5">
+                            <Label Text="{Binding Make}"></Label>
+                            <Label Text="{Binding Model}"></Label>
+                        </HorizontalStackLayout>
+                    </Frame>
+                    
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        <Button Text="Fetch Cars" Command="{Binding GetCarListCommand}" IsEnabled="{Binding IsNotLoading}"
+                Grid.Row="1" Grid.Column="0"
+                ></Button>
+    </Grid>
+
+</ContentPage>
