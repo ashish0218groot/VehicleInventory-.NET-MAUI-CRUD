@@ -12,7 +12,7 @@ namespace VehicleInventory.ViewModels
     public partial class BaseViewModel : ObservableObject
     {
         [ObservableProperty]
-        string title;
+        public string title;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor (nameof(IsNotLoading))]
