@@ -15,6 +15,7 @@ namespace VehicleInventory.ViewModels
     {
         private readonly CarService carService;
 
+
         public ObservableCollection<Car> Cars { get; private set; } = new();
         public CarListViewModel(CarService carService)
         {

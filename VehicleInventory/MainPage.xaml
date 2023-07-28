@@ -12,6 +12,12 @@
 
     <Grid ColumnDefinitions="*,*" ColumnSpacing="5" RowDefinitions="*,Auto">
 
+        <RefreshView Grid.ColumnSpan="2"
+                     Command="{Binding GetCarListCommand}" IsRefreshing="True">
+            
+        </RefreshView>
+        
+        
         <CollectionView Grid.ColumnSpan="2" ItemsSource="{Binding Cars}" SelectionMode="None" EmptyView="No cars available">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="model:Car">
