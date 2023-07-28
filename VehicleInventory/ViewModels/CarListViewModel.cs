@@ -40,8 +40,7 @@ namespace VehicleInventory.ViewModels
                 {
                     Cars.Add(car);
                 }
-                await Shell.Current.DisplayAlert("Error", "Failed to get vehicle data", "Ok");
-            }
+             }
 
             catch (Exception ex)
             {

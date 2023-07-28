@@ -11,21 +11,27 @@
 
 
     <Grid ColumnDefinitions="*,*" ColumnSpacing="5" RowDefinitions="*,Auto">
+
         <CollectionView Grid.ColumnSpan="2" ItemsSource="{Binding Cars}" SelectionMode="None" EmptyView="No cars available">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="model:Car">
-                    <Frame HeightRequest="90">
-                        <HorizontalStackLayout Padding="10" Spacing="5">
-                            <Label Text="{Binding Make}"></Label>
-                            <Label Text="{Binding Model}"></Label>
-                        </HorizontalStackLayout>
-                    </Frame>
-                    
+
+                    <Grid Padding="10">
+                        <Frame HeightRequest="90">
+                            <HorizontalStackLayout Padding="10" Spacing="5">
+                                <Label Text="{Binding Make}" TextColor="Black"></Label>
+                                <Label Text="{Binding Model}" TextColor="Black"></Label>
+                            </HorizontalStackLayout>
+                        </Frame>
+                    </Grid>
+
+
+
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
         <Button Text="Fetch Cars" Command="{Binding GetCarListCommand}" IsEnabled="{Binding IsNotLoading}"
-                Grid.Row="1" Grid.Column="0"
+                Grid.Row="1" Grid.Column="0" Margin="9"
                 ></Button>
     </Grid>
 
