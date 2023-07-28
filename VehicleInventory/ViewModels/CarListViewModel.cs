@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VehicleInventory.Models;
 using VehicleInventory.Services;
+using VehicleInventory.Views;
 
 namespace VehicleInventory.ViewModels
 {
@@ -22,6 +24,8 @@ namespace VehicleInventory.ViewModels
             Title = "Vehicle Inventory";
             this.carService = carService;
         }
+        [ObservableProperty]
+        bool isRefreshing;
 
         [RelayCommand]
         async Task GetCarList()
@@ -51,8 +55,19 @@ namespace VehicleInventory.ViewModels
             finally
             {
                 IsLoading = false;
+                IsRefreshing = false;
             }
         }
 
+        [RelayCommand]
+        //navigate to car details
+        async  Task GetCarDetails(Car car)
+        {
+            if (car == null)
+                return;
+            await Shell.Current.GoToAsync(nameof(CarDetailsPage), true, new Dictionary<string, object> {
+                {nameof(Car), car},
+            });
+        }
     }
 }

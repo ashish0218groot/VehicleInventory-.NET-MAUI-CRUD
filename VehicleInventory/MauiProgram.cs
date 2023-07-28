@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using VehicleInventory.Services;
 using VehicleInventory.ViewModels;
+using VehicleInventory.Views;
 
 namespace VehicleInventory;
 
@@ -23,6 +24,8 @@ public static class MauiProgram
 		builder.Services.AddSingleton<CarService>();
 		builder.Services.AddSingleton<CarListViewModel>();
 		builder.Services.AddSingleton<MainPage>();
+		builder.Services.AddTransient<CarDetailsPage>();
+		builder.Services.AddTransient<CarDetailsViewModel>();
 		return builder.Build();
 	}
 }
