@@ -58,8 +58,8 @@
                                      CommandParameter="{Binding Id}"
                                     />
                                 </Frame.GestureRecognizers>
-                                <HorizontalStackLayout Padding="10" Spacing="5">
-                                    <Label Text="{Binding Make}" TextColor="Black"></Label>
+                                <HorizontalStackLayout Padding="0" Spacing="5">
+                                    <Label Text="{Binding Make}" TextColor="Black" FontSize="16" Padding="0"></Label>
                                     <Label Text="{Binding Model}" TextColor="Black"></Label>
                                 </HorizontalStackLayout>
                             </Frame>

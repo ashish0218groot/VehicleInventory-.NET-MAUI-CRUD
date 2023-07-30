@@ -64,6 +64,20 @@ namespace VehicleInventory.Services
             return 0;
         }
 
+        public Car GetCar(int id) 
+        {
+            try
+            {
+                Init();
+                return conn.Table<Car>().FirstOrDefault(a=>a.Id == id);
+            }
+            catch (Exception)
+            {
+                StatusMessage = "Failed to retrieve data";
+            }
+            return null;
+        }
+
 
         public List<Car> GetCars()
         {
