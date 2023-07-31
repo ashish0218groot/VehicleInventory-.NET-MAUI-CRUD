@@ -1,3 +1,7 @@
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+using VehicleInventoryAPI.Models;
+
 namespace VehicleInventoryAPI
 {
     public class Program
@@ -13,9 +17,14 @@ namespace VehicleInventoryAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddCors(c => {
-                c.AddPolicy("AllowAll", a=>a.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
+            builder.Services.AddCors(c =>
+            {
+                c.AddPolicy("AllowAll", a => a.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
             });
+
+          //  var dbPath = Path.Join(Directory.GetCurrentDirectory(), "carlist.db");
+            var conn = new SqliteConnection($"Data Source=D:\\Ashish\\Projects\\VehicleInventory\\VehicleInventoryAPI\\carlist.db");
+            builder.Services.AddDbContext<CarListDbContext>(a => a.UseSqlite(conn));
 
             var app = builder.Build();
 
@@ -31,24 +40,46 @@ namespace VehicleInventoryAPI
 
             app.UseAuthorization();
 
-            var summaries = new[]
-            {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
 
-            app.MapGet("/weatherforecast", (HttpContext httpContext) =>
+            app.MapGet("/cars", async (CarListDbContext db) => await db.Cars.ToListAsync());
+
+            app.MapGet("/cars/{id}", async (int id, CarListDbContext db) =>
+            await db.Cars.FindAsync(id) is Car car ? Results.Ok(car) : Results.NotFound()
+               );
+
+            app.MapPut("/cars/{id}", async (int id, Car car, CarListDbContext db) =>
             {
-                var forecast = Enumerable.Range(1, 5).Select(index =>
-                    new WeatherForecast
-                    {
-                        Date = DateTime.Now.AddDays(index),
-                        TemperatureC = Random.Shared.Next(-20, 55),
-                        Summary = summaries[Random.Shared.Next(summaries.Length)]
-                    })
-                    .ToArray();
-                return forecast;
-            })
-            .WithName("GetWeatherForecast");
+                var record = await db.Cars.FindAsync(id);
+                if (record is null) return Results.NotFound();
+
+                record.Make = car.Make;
+                record.Model = car.Model;
+                record.Vin = car.Vin;
+
+                await db.SaveChangesAsync();
+
+                return Results.NoContent();
+
+            });
+
+            app.MapDelete("/cars/{id}", async (int id, CarListDbContext db) => {
+                var record = await db.Cars.FindAsync(id);
+                if (record is null) return Results.NotFound();
+                db.Remove(record);
+                await db.SaveChangesAsync();
+
+                return Results.NoContent();
+
+            });
+
+            app.MapPost("/cars", async (Car car, CarListDbContext db) => {
+                await db.AddAsync(car);
+                await db.SaveChangesAsync();
+
+                return Results.Created($"/cars/{car.Id}", car);
+
+            });
+
 
             app.Run();
         }
