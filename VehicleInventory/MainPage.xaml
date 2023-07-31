@@ -21,8 +21,11 @@
 
         <VerticalStackLayout Padding="5" Grid.Row="0" Margin="9">
             <Entry x:Name="Make" Placeholder="Enter Make" Text="{Binding Make}" />
+            <Label Text="{Binding MakeError}" TextColor="Red"/>
             <Entry x:Name="Model" Placeholder="Enter Model" Text="{Binding Model}"/>
+            <Label Text="{Binding ModelError}" TextColor="Red"/>
             <Entry x:Name="Vin" Placeholder="Enter Vin" Text="{Binding Vin}"/>
+            <Label Text="{Binding VinError}" TextColor="Red"    />
         </VerticalStackLayout>
 
 

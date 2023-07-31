@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -24,7 +25,11 @@ namespace VehicleInventory.ViewModels
             Title = "Vehicle Inventory";
             AddEditButtonText = editButtontext;
             GetCarList().Wait();
+            PropertyChanged += OnViewModelPropertyChanged;
         }
+
+      
+
         [ObservableProperty]
         bool isRefreshing;
 
@@ -42,6 +47,15 @@ namespace VehicleInventory.ViewModels
 
         [ObservableProperty]
         int carId;
+
+        [ObservableProperty]
+        string makeError;
+
+        [ObservableProperty]
+        string modelError;
+
+        [ObservableProperty]
+        string vinError;
 
         [RelayCommand]
         async Task GetCarList()
@@ -131,11 +145,11 @@ namespace VehicleInventory.ViewModels
         {
             AddEditButtonText = createButtontext;
             CarId = 0;
-            Make = string.Empty; Model = string.Empty;Vin = string.Empty;
+            Make = string.Empty; Model = string.Empty; Vin = string.Empty;
         }
 
 
-            [RelayCommand]
+        [RelayCommand]
         async Task SetEditMode(int id)
         {
             AddEditButtonText = editButtontext;
@@ -149,6 +163,29 @@ namespace VehicleInventory.ViewModels
         [RelayCommand]
         async Task SaveCar()
         {
+            MakeError = String.Empty;
+            ModelError = String.Empty;
+            VinError = String.Empty;
+
+            if(string.IsNullOrEmpty(Make))
+            {
+                MakeError = "Please Enter the vehicle make value";
+                return;
+            }
+
+            if (string.IsNullOrEmpty(Model))
+            {
+                ModelError = "Please Enter the vehicle model value";
+                return;
+
+            }
+
+            if (string.IsNullOrEmpty(Vin))
+            {
+                VinError = "Please Enter the vehicle vin value";
+                return;
+            }
+
             if (string.IsNullOrEmpty(Make) || string.IsNullOrEmpty(Model) || string.IsNullOrEmpty(Vin))
             {
                 await Shell.Current.DisplayAlert("Invalid Data", "Please insert valid data", "Ok");
@@ -179,6 +216,23 @@ namespace VehicleInventory.ViewModels
             await ClearForm();
 
         }
-    }
 
+        private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs args)
+        {
+            if (args.PropertyName == nameof(Make))
+            {
+                MakeError = string.Empty;
+            }
+
+            if (args.PropertyName == nameof(Model))
+            {
+                ModelError = string.Empty;
+            }
+
+            if (args.PropertyName == nameof(Vin))
+            {
+                VinError = string.Empty;
+            }
+        }
+    }
 }
