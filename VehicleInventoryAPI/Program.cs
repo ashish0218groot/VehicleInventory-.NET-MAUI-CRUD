@@ -23,17 +23,17 @@ namespace VehicleInventoryAPI
             });
 
           //  var dbPath = Path.Join(Directory.GetCurrentDirectory(), "carlist.db");
-            var conn = new SqliteConnection($"Data Source=D:\\Ashish\\Projects\\VehicleInventory\\VehicleInventoryAPI\\carlist.db");
+            var conn = new SqliteConnection($"Data Source=D:\\Ashish\\Projects\\SQLlite\\carlist.db");
             builder.Services.AddDbContext<CarListDbContext>(a => a.UseSqlite(conn));
 
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
+            //if (app.Environment.IsDevelopment())
+            //{
                 app.UseSwagger();
                 app.UseSwaggerUI();
-            }
+            //}
 
             app.UseHttpsRedirection();
             app.UseCors("AllowAll");
