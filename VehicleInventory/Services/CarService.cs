@@ -41,13 +41,14 @@ namespace VehicleInventory.Services
                 }
 
                 result = conn.Insert(car);
-                StatusMessage = result == 0 ? "Insert Failed" : "Inser Successful";
+                StatusMessage = result == 0 ? "Insert Failed" : "Insert Successful";
             }
             catch (Exception)
             {
                 StatusMessage = "Failed to insert Data";        
             }
-           }
+           
+        }
 
         public int DeleteCar(int id)
         {
@@ -93,6 +94,27 @@ namespace VehicleInventory.Services
             }
 
             return new List<Car>();
+        }
+
+        public void UpdateCar (Car car)
+        {
+            try
+            {
+                Init();
+
+                if (car == null)
+                {
+                    throw new Exception("Invalid car record");
+                }
+
+                result = conn.Update(car);
+                StatusMessage = result == 0 ? "Update Failed" : "Update Successful";
+            }
+            catch (Exception)
+            {
+                StatusMessage = "Failed to insert Data";
+            }
+
         }
 
         //public List<Car> GetCars()

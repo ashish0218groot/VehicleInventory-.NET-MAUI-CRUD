@@ -16,10 +16,13 @@ namespace VehicleInventory.ViewModels
     public partial class CarListViewModel : BaseViewModel
     {
         private readonly CarService carService;
+        const string editButtontext = "Update Car";
+        const string createButtontext = "Add Car";
         public ObservableCollection<Car> Cars { get; private set; } = new();
         public CarListViewModel()
         {
             Title = "Vehicle Inventory";
+            AddEditButtonText = editButtontext;
             GetCarList().Wait();
         }
         [ObservableProperty]
@@ -33,6 +36,12 @@ namespace VehicleInventory.ViewModels
 
         [ObservableProperty]
         string vin;
+
+        [ObservableProperty]
+        string addEditButtonText;
+
+        [ObservableProperty]
+        int carId;
 
         [RelayCommand]
         async Task GetCarList()
@@ -72,8 +81,8 @@ namespace VehicleInventory.ViewModels
         {
             if (id == 0)
                 return;
-            await Shell.Current.GoToAsync($"{nameof(CarDetailsPage)}?Id={id}",true);
-         
+            await Shell.Current.GoToAsync($"{nameof(CarDetailsPage)}?Id={id}", true);
+
         }
 
         [RelayCommand]
@@ -115,5 +124,61 @@ namespace VehicleInventory.ViewModels
                 await GetCarList();
             }
         }
+
+
+        [RelayCommand]
+        async Task ClearForm()
+        {
+            AddEditButtonText = createButtontext;
+            CarId = 0;
+            Make = string.Empty; Model = string.Empty;Vin = string.Empty;
+        }
+
+
+            [RelayCommand]
+        async Task SetEditMode(int id)
+        {
+            AddEditButtonText = editButtontext;
+            CarId = id;
+            var car = App.CarService.GetCar(id);
+            Make = car.Make;
+            Model = car.Model;
+            Vin = car.Vin;
+        }
+
+        [RelayCommand]
+        async Task SaveCar()
+        {
+            if (string.IsNullOrEmpty(Make) || string.IsNullOrEmpty(Model) || string.IsNullOrEmpty(Vin))
+            {
+                await Shell.Current.DisplayAlert("Invalid Data", "Please insert valid data", "Ok");
+                return;
+            }
+
+            var car = new Car
+            {
+                Make = Make,
+                Model = Model,
+                Vin = Vin
+            };
+
+            if (CarId != 0)
+            {
+                car.Id = CarId;
+                App.CarService.UpdateCar(car);
+                await Shell.Current.DisplayAlert("Info", App.CarService.StatusMessage, "Ok");
+
+            }
+            else
+            {
+                App.CarService.AddCar(car);
+                await Shell.Current.DisplayAlert("Info", App.CarService.StatusMessage, "Ok");
+            }
+
+            await GetCarList();
+            await ClearForm();
+
+        }
     }
+
 }
