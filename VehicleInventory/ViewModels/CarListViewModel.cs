@@ -26,9 +26,7 @@ namespace VehicleInventory.ViewModels
             AddEditButtonText = editButtontext;
             GetCarList().Wait();
             PropertyChanged += OnViewModelPropertyChanged;
-        }
-
-      
+        }      
 
         [ObservableProperty]
         bool isRefreshing;
