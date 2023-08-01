@@ -18,7 +18,8 @@
                 HorizontalOptions="Center" FontSize="Medium"/>
     </StackLayout>
 
-
+ 
+    
     <!--<VerticalStackLayout>
         <Label 
             Text="{Binding Car.Vin}"
