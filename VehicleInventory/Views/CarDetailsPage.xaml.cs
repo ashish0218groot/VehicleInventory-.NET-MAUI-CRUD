@@ -4,14 +4,29 @@ namespace VehicleInventory.Views;
 
 public partial class CarDetailsPage : ContentPage
 {
-	public CarDetailsPage(CarDetailsViewModel carDetailsViewModel)
-	{
-		InitializeComponent();
-		BindingContext = carDetailsViewModel;
-	}
+    private readonly CarDetailsViewModel carDetailsViewModel;
 
-    protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    public CarDetailsPage(CarDetailsViewModel carDetailsViewModel)
     {
-        base.OnNavigatedTo(args);
+        InitializeComponent();
+        this.carDetailsViewModel = carDetailsViewModel;
     }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        await carDetailsViewModel.GetCarData();
+    }
+
+
+    //public CarDetailsPage(CarDetailsViewModel carDetailsViewModel)
+    //{
+    //	InitializeComponent();
+    //	BindingContext = carDetailsViewModel;
+    //}
+
+    //   protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    //   {
+    //       base.OnNavigatedTo(args);
+    //   }
 }

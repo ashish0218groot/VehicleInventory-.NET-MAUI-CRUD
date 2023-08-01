@@ -5,10 +5,24 @@
              xmlns:vm="clr-namespace:VehicleInventory.ViewModels"
              Title="{Binding Car.Model}"
              x:DataType="vm:CarDetailsViewModel" >
-    <VerticalStackLayout>
+
+    <StackLayout>
+        <Label Text="{Binding Car.Make}"
+                VerticalOptions="Center" 
+                HorizontalOptions="Center" FontSize="Medium"/>
+        <Label Text="{Binding Car.Model}"
+                VerticalOptions="Center" 
+                HorizontalOptions="Center" FontSize="Medium"/>
+        <Label Text="{Binding Car.Vin}"
+                VerticalOptions="Center" 
+                HorizontalOptions="Center" FontSize="Medium"/>
+    </StackLayout>
+
+
+    <!--<VerticalStackLayout>
         <Label 
             Text="{Binding Car.Vin}"
             VerticalOptions="Center" 
             HorizontalOptions="Center" FontSize="Medium" />
-    </VerticalStackLayout>
+    </VerticalStackLayout>-->
 </ContentPage>

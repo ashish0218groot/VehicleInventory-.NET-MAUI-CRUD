@@ -23,12 +23,13 @@ public static class MauiProgram
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
-        builder.Services.AddSingleton(a => ActivatorUtilities.CreateInstance<CarService>(a, dbPath));
+        builder.Services.AddSingleton(a => ActivatorUtilities.CreateInstance<CarDatabaseService>(a, dbPath));
 
         builder.Services.AddSingleton<CarListViewModel>();
         builder.Services.AddSingleton<MainPage>();
         builder.Services.AddTransient<CarDetailsPage>();
         builder.Services.AddTransient<CarDetailsViewModel>();
+        builder.Services.AddTransient<CarApiService>();
         return builder.Build();
     }
 }

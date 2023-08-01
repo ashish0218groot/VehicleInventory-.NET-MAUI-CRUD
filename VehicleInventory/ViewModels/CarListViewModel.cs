@@ -16,17 +16,23 @@ namespace VehicleInventory.ViewModels
 {
     public partial class CarListViewModel : BaseViewModel
     {
-        private readonly CarService carService;
         const string editButtontext = "Update Car";
         const string createButtontext = "Add Car";
+        private readonly CarApiService carApiService;
+        NetworkAccess accessType = Connectivity.Current.NetworkAccess;
+        string message = string.Empty;
         public ObservableCollection<Car> Cars { get; private set; } = new();
-        public CarListViewModel()
+        //string isWinUI = DeviceInfo.Platform == DevicePlatform.WinUI ? "True" : "False";
+        bool isWinUI = DeviceInfo.Platform == DevicePlatform.WinUI;
+
+        //public static string BaseAddress = DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:8002" : "http://localhost:8002";
+        public CarListViewModel(CarApiService carApiService)
         {
             Title = "Vehicle Inventory";
             AddEditButtonText = editButtontext;
-            GetCarList().Wait();
+            this.carApiService = carApiService;
             PropertyChanged += OnViewModelPropertyChanged;
-        }      
+        }
 
         [ObservableProperty]
         bool isRefreshing;
@@ -56,7 +62,7 @@ namespace VehicleInventory.ViewModels
         string vinError;
 
         [RelayCommand]
-        async Task GetCarList()
+        public async Task GetCarList()
         {
             if (IsLoading)
                 return;
@@ -68,7 +74,16 @@ namespace VehicleInventory.ViewModels
                 if (Cars.Any())
                     Cars.Clear();
 
-                var cars = App.CarService.GetCars();
+                var cars = new List<Car>();
+                if (accessType == NetworkAccess.Internet && isWinUI)
+                {
+                    cars = await carApiService.GetCars();
+                }
+                else
+                {
+                    cars = App.CarService.GetCars();
+                }
+
                 foreach (var car in cars)
                 {
                     Cars.Add(car);
@@ -78,7 +93,7 @@ namespace VehicleInventory.ViewModels
             catch (Exception ex)
             {
                 Debug.WriteLine($"Unable to get cars: {ex.Message}");
-                await Shell.Current.DisplayAlert("Error", "Failed to get vehicle data", "Ok");
+                await ShowAlert("Failed to retrieve vehicle list ");
             }
             finally
             {
@@ -122,19 +137,27 @@ namespace VehicleInventory.ViewModels
         [RelayCommand]
         async Task DeleteCar(int id)
         {
-            if (id == 0)
+            var successMessage = "Delete Successful";
+             if (id == 0)
             {
-                await Shell.Current.DisplayAlert("invalid Record", "Please try again", "Ok");
+                await ShowAlert("Please try again");
                 return;
             }
-            var result = App.CarService.DeleteCar(id);
-            if (result == 0)
-                await Shell.Current.DisplayAlert("invalid Data", "Please insert valid data", "Ok");
+
+            if (accessType == NetworkAccess.Internet && isWinUI)
+            {
+                await carApiService.DeleteCar(id);
+                //message = carApiService.StatusMessage;
+                message = successMessage;
+            }
             else
             {
-                await Shell.Current.DisplayAlert("Deletion Successful", "Record Removed Successfully", "Ok");
-                await GetCarList();
+                App.CarService.DeleteCar(id);
+               // message = App.CarService.StatusMessage;
+                message = successMessage;
             }
+            await ShowAlert(message);
+            await GetCarList();
         }
 
 
@@ -161,32 +184,32 @@ namespace VehicleInventory.ViewModels
         [RelayCommand]
         async Task SaveCar()
         {
-            MakeError = String.Empty;
-            ModelError = String.Empty;
-            VinError = String.Empty;
+            //MakeError = String.Empty;
+            //ModelError = String.Empty;
+            //VinError = String.Empty;
 
-            if(string.IsNullOrEmpty(Make))
-            {
-                MakeError = "Please Enter the vehicle make value";
-                return;
-            }
+            //if (string.IsNullOrEmpty(Make))
+            //{
+            //    MakeError = "Please Enter the vehicle make value";
+            //    return;
+            //}
 
-            if (string.IsNullOrEmpty(Model))
-            {
-                ModelError = "Please Enter the vehicle model value";
-                return;
+            //if (string.IsNullOrEmpty(Model))
+            //{
+            //    ModelError = "Please Enter the vehicle model value";
+            //    return;
 
-            }
+            //}
 
-            if (string.IsNullOrEmpty(Vin))
-            {
-                VinError = "Please Enter the vehicle vin value";
-                return;
-            }
+            //if (string.IsNullOrEmpty(Vin))
+            //{
+            //    VinError = "Please Enter the vehicle vin value";
+            //    return;
+            //}
 
             if (string.IsNullOrEmpty(Make) || string.IsNullOrEmpty(Model) || string.IsNullOrEmpty(Vin))
             {
-                await Shell.Current.DisplayAlert("Invalid Data", "Please insert valid data", "Ok");
+                await ShowAlert("Please Insert Valid Data");
                 return;
             }
 
@@ -197,22 +220,46 @@ namespace VehicleInventory.ViewModels
                 Vin = Vin
             };
 
+
+            car.Id = CarId;
+
+
             if (CarId != 0)
             {
-                car.Id = CarId;
-                App.CarService.UpdateCar(car);
-                await Shell.Current.DisplayAlert("Info", App.CarService.StatusMessage, "Ok");
-
+                 if (accessType == NetworkAccess.Internet && isWinUI)
+                {
+                    await carApiService.UpdateCar(CarId, car);
+                    message = carApiService.StatusMessage;
+                }
+                else
+                {
+                    App.CarService.UpdateCar(car);
+                    message = App.CarService.StatusMessage;
+                }
             }
             else
             {
-                App.CarService.AddCar(car);
-                await Shell.Current.DisplayAlert("Info", App.CarService.StatusMessage, "Ok");
-            }
+                if (accessType == NetworkAccess.Internet && isWinUI)
+                {
+                    await carApiService.AddCar(car);
+                    message = carApiService.StatusMessage;
+                }
+                else
+                {
+                    App.CarService.AddCar(car);
+                    message = App.CarService.StatusMessage;
+                }
 
+            }
+            await ShowAlert(message);
             await GetCarList();
             await ClearForm();
 
+        }
+
+        private async Task ShowAlert(string message)
+        {
+            await Shell.Current.DisplayAlert("Info", message, "Ok");
         }
 
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs args)
@@ -233,4 +280,225 @@ namespace VehicleInventory.ViewModels
             }
         }
     }
+
+
+    //public partial class CarListViewModel : BaseViewModel
+    //{
+    //    private readonly CarDatabaseService carService;
+    //    const string editButtontext = "Update Car";
+    //    const string createButtontext = "Add Car";
+    //    public ObservableCollection<Car> Cars { get; private set; } = new();
+    //    public CarListViewModel()
+    //    {
+    //        Title = "Vehicle Inventory";
+    //        AddEditButtonText = editButtontext;
+    //        GetCarList().Wait();
+    //        PropertyChanged += OnViewModelPropertyChanged;
+    //    }      
+
+    //    [ObservableProperty]
+    //    bool isRefreshing;
+
+    //    [ObservableProperty]
+    //    string make;
+
+    //    [ObservableProperty]
+    //    string model;
+
+    //    [ObservableProperty]
+    //    string vin;
+
+    //    [ObservableProperty]
+    //    string addEditButtonText;
+
+    //    [ObservableProperty]
+    //    int carId;
+
+    //    [ObservableProperty]
+    //    string makeError;
+
+    //    [ObservableProperty]
+    //    string modelError;
+
+    //    [ObservableProperty]
+    //    string vinError;
+
+    //    [RelayCommand]
+    //    async Task GetCarList()
+    //    {
+    //        if (IsLoading)
+    //            return;
+
+    //        try
+    //        {
+    //            IsLoading = true;
+
+    //            if (Cars.Any())
+    //                Cars.Clear();
+
+    //            var cars = App.CarService.GetCars();
+    //            foreach (var car in cars)
+    //            {
+    //                Cars.Add(car);
+    //            }
+    //        }
+
+    //        catch (Exception ex)
+    //        {
+    //            Debug.WriteLine($"Unable to get cars: {ex.Message}");
+    //            await Shell.Current.DisplayAlert("Error", "Failed to get vehicle data", "Ok");
+    //        }
+    //        finally
+    //        {
+    //            IsLoading = false;
+    //            IsRefreshing = false;
+    //        }
+    //    }
+
+    //    [RelayCommand]
+    //    //navigate to car details
+    //    async Task GetCarDetails(int id)
+    //    {
+    //        if (id == 0)
+    //            return;
+    //        await Shell.Current.GoToAsync($"{nameof(CarDetailsPage)}?Id={id}", true);
+
+    //    }
+
+    //    [RelayCommand]
+    //    async Task AddCar()
+    //    {
+    //        if (string.IsNullOrEmpty(Make) || string.IsNullOrEmpty(Model) || string.IsNullOrEmpty(Vin))
+    //        {
+    //            await Shell.Current.DisplayAlert("Invalid Data", "Please insert valid data", "Ok");
+    //            return;
+    //        }
+
+    //        var car = new Car
+    //        {
+    //            Make = Make,
+    //            Model = Model,
+    //            Vin = Vin
+    //        };
+
+    //        App.CarService.AddCar(car);
+    //        await Shell.Current.DisplayAlert("Info", App.CarService.StatusMessage, "Ok");
+    //        await GetCarList();
+
+    //    }
+
+    //    [RelayCommand]
+    //    async Task DeleteCar(int id)
+    //    {
+    //        if (id == 0)
+    //        {
+    //            await Shell.Current.DisplayAlert("invalid Record", "Please try again", "Ok");
+    //            return;
+    //        }
+    //        var result = App.CarService.DeleteCar(id);
+    //        if (result == 0)
+    //            await Shell.Current.DisplayAlert("invalid Data", "Please insert valid data", "Ok");
+    //        else
+    //        {
+    //            await Shell.Current.DisplayAlert("Deletion Successful", "Record Removed Successfully", "Ok");
+    //            await GetCarList();
+    //        }
+    //    }
+
+
+    //    [RelayCommand]
+    //    async Task ClearForm()
+    //    {
+    //        AddEditButtonText = createButtontext;
+    //        CarId = 0;
+    //        Make = string.Empty; Model = string.Empty; Vin = string.Empty;
+    //    }
+
+
+    //    [RelayCommand]
+    //    async Task SetEditMode(int id)
+    //    {
+    //        AddEditButtonText = editButtontext;
+    //        CarId = id;
+    //        var car = App.CarService.GetCar(id);
+    //        Make = car.Make;
+    //        Model = car.Model;
+    //        Vin = car.Vin;
+    //    }
+
+    //    [RelayCommand]
+    //    async Task SaveCar()
+    //    {
+    //        MakeError = String.Empty;
+    //        ModelError = String.Empty;
+    //        VinError = String.Empty;
+
+    //        if(string.IsNullOrEmpty(Make))
+    //        {
+    //            MakeError = "Please Enter the vehicle make value";
+    //            return;
+    //        }
+
+    //        if (string.IsNullOrEmpty(Model))
+    //        {
+    //            ModelError = "Please Enter the vehicle model value";
+    //            return;
+
+    //        }
+
+    //        if (string.IsNullOrEmpty(Vin))
+    //        {
+    //            VinError = "Please Enter the vehicle vin value";
+    //            return;
+    //        }
+
+    //        if (string.IsNullOrEmpty(Make) || string.IsNullOrEmpty(Model) || string.IsNullOrEmpty(Vin))
+    //        {
+    //            await Shell.Current.DisplayAlert("Invalid Data", "Please insert valid data", "Ok");
+    //            return;
+    //        }
+
+    //        var car = new Car
+    //        {
+    //            Make = Make,
+    //            Model = Model,
+    //            Vin = Vin
+    //        };
+
+    //        if (CarId != 0)
+    //        {
+    //            car.Id = CarId;
+    //            App.CarService.UpdateCar(car);
+    //            await Shell.Current.DisplayAlert("Info", App.CarService.StatusMessage, "Ok");
+
+    //        }
+    //        else
+    //        {
+    //            App.CarService.AddCar(car);
+    //            await Shell.Current.DisplayAlert("Info", App.CarService.StatusMessage, "Ok");
+    //        }
+
+    //        await GetCarList();
+    //        await ClearForm();
+
+    //    }
+
+    //    private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs args)
+    //    {
+    //        if (args.PropertyName == nameof(Make))
+    //        {
+    //            MakeError = string.Empty;
+    //        }
+
+    //        if (args.PropertyName == nameof(Model))
+    //        {
+    //            ModelError = string.Empty;
+    //        }
+
+    //        if (args.PropertyName == nameof(Vin))
+    //        {
+    //            VinError = string.Empty;
+    //        }
+    //    }
+    //}
 }
