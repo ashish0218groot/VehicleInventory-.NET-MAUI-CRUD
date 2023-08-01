@@ -175,7 +175,16 @@ namespace VehicleInventory.ViewModels
         {
             AddEditButtonText = editButtontext;
             CarId = id;
-            var car = App.CarService.GetCar(id);
+            Car car;
+            if (accessType == NetworkAccess.Internet && isWinUI)
+            {
+                car = await carApiService.GetCar(CarId);
+            }
+            else
+            {
+                car = App.CarService.GetCar(CarId);
+            }
+
             Make = car.Make;
             Model = car.Model;
             Vin = car.Vin;
@@ -184,28 +193,28 @@ namespace VehicleInventory.ViewModels
         [RelayCommand]
         async Task SaveCar()
         {
-            //MakeError = String.Empty;
-            //ModelError = String.Empty;
-            //VinError = String.Empty;
+            MakeError = String.Empty;
+            ModelError = String.Empty;
+            VinError = String.Empty;
 
-            //if (string.IsNullOrEmpty(Make))
-            //{
-            //    MakeError = "Please Enter the vehicle make value";
-            //    return;
-            //}
+            if (string.IsNullOrEmpty(Make))
+            {
+                MakeError = "Please Enter the vehicle make value";
+                return;
+            }
 
-            //if (string.IsNullOrEmpty(Model))
-            //{
-            //    ModelError = "Please Enter the vehicle model value";
-            //    return;
+            if (string.IsNullOrEmpty(Model))
+            {
+                ModelError = "Please Enter the vehicle model value";
+                return;
 
-            //}
+            }
 
-            //if (string.IsNullOrEmpty(Vin))
-            //{
-            //    VinError = "Please Enter the vehicle vin value";
-            //    return;
-            //}
+            if (string.IsNullOrEmpty(Vin))
+            {
+                VinError = "Please Enter the vehicle vin value";
+                return;
+            }
 
             if (string.IsNullOrEmpty(Make) || string.IsNullOrEmpty(Model) || string.IsNullOrEmpty(Vin))
             {
