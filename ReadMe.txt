@@ -11,7 +11,7 @@ How to configure :
       between  working. VS Enterprise with correct Key will need to be updated to latest version to use MAUI.
 
 
-2.  Once VisualStudioSetup.exe is completed, launch it, we can see two options Installed and Available.
+2. Once VisualStudioSetup.exe is completed, launch it, we can see two options Installed and Available.
     Installed : currently available Visual Studio versions list will be available. Click on Update then update it to latest version. 
                 In case we want to modify currently installed Visual Studio, go to Installed => VS version => Modify.
 
@@ -20,15 +20,15 @@ How to configure :
    When modifying/Installing Visual Studio, Select VS Studio => Modify => Under Desktop & Mobile Section,
     Select .NET Multi-platform App UI development and Install it. 
   
-   Once MAUI is can see MAUI project selection in by Searching MAUI.
-    Now we can create a .NET MAUI App or .NET MAUI Blazor App or .NET MAUI Class Library etc.
+   Once MAUI installation in VS is done,we can see MAUI project selection in by Searching MAUI in search bar.
+   Now we can create a .NET MAUI App or .NET MAUI Blazor App or .NET MAUI Class Library etc.
   
 3. This project is based upon .NET MAUI App.
    To install Android Emulator, go to Tools => Android Device Manager
 
   click on the project execution Button(it may say "Windows Machine") check the drop down, 
   Select Android Emulators => Android Device Manager. 
-  Here we can select a Android Device with a android  version of our choice and use it in the emulator.  
+  Here we can select a Android Device with a android  version of our choice and use it in the emulator.
 
 4.  To run Hyper-v/Hypervisor to accelerate emulator , We can follow one of these steps :
   Option 1 :
