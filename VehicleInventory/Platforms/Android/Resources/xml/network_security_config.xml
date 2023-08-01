@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<network-security-config>
+	<domain-config cleartextTrafficPermitted="true">
+        //Allow to connect to a endpoint SSL certificate
+
+         //loopback address of android address to Localhost
+		<domain includeSubdomains="true">10.0.2.2</domain>
+		<domain includeSubdomains="true">localhost</domain>
+		<domain includeSubdomains="true">192.168.1.14</domain>
+		<trust-anchors>
+			<certificates src="system" />
+		</trust-anchors>
+	</domain-config>
+</network-security-config>
