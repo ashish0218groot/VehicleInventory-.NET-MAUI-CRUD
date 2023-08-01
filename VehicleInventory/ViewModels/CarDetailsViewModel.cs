@@ -14,6 +14,8 @@ namespace VehicleInventory.ViewModels
     public partial class CarDetailsViewModel : BaseViewModel, IQueryAttributable
     {
         private readonly CarApiService carApiService;
+        bool isWinUI = DeviceInfo.Platform == DevicePlatform.WinUI;
+
 
         public CarDetailsViewModel(CarApiService carApiService)
         {
@@ -37,7 +39,7 @@ namespace VehicleInventory.ViewModels
 
         public async Task GetCarData()
         {
-            if(accessType==NetworkAccess.Internet)
+            if(accessType==NetworkAccess.Internet && isWinUI)
             {
                 Car = await carApiService.GetCar(Id);
             }

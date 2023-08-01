@@ -38,7 +38,7 @@
         <RefreshView Grid.Row="4"
                      Command="{Binding GetCarListCommand}" 
                      IsRefreshing="{Binding IsRefreshing}">
-            <CollectionView ItemsSource="{Binding Cars}" SelectionMode="None" EmptyView="No cars available">
+            <CollectionView ItemsSource="{Binding Cars}" SelectionMode="None">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="model:Car">
                         <Grid Padding="10" ColumnDefinitions="*, auto">
