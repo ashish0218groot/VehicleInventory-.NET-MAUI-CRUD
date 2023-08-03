@@ -4,7 +4,9 @@ How to configure :
 
 1.To use MAUI, it requires Visual Studio 2022 17.3 or greater, or Visual Studio 2022 for Mac 17.4 or greater.
 
- (a)  Visit this link to install Visual Studio 2022 Community Edition : https://visualstudio.microsoft.com/vs/community/ , 
+ (a)  Visit this link to install Visual Studio 2022 Community Edition : 
+         https://visualstudio.microsoft.com/downloads/  
+         https://visualstudio.microsoft.com/vs/community/  
       By following this link  you can also update your already installed Visual Studio. 
 
  (b)  In case of Enterprise edition, cracked version may face bugs like VS crashing, MAUI controls being disabled or hidden in 
